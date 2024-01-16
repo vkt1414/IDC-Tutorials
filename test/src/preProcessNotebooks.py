@@ -15,7 +15,8 @@ def modify_notebook(file_name, project_id, query1, query2):
             cell.source = cell.source.replace('auth.authenticate_user()', '#while testing, the authentication is handled by using application default credentials\n#auth.authenticate_user()')
             cell.source = cell.source.replace('REPLACE THIS TEXT WITH YOUR QUERY!', query1)
             cell.source = cell.source.replace('# write the selection criteria under this line!', query2)       
-            cell.source = '# ' + cell.source.replace('\n', '\n# ') if cell.source.startswith('viewer')
+            cell.source = '# ' + cell.source.replace('\n', '\n# ') if cell.source.lower().startswith('viewer')
+
 
     # Write the notebook back to disk
     with open(file_name, 'w') as f:
