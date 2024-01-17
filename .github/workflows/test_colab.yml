@@ -110,7 +110,7 @@ jobs:
         with:
           title: Update colab images list
           body:  Update colab-images-list.csv so that when a colab image is updated, we do not keep pulling colab docker image from gcp and pushing to dockerhub everytime
-          base:  main
+          base:  master
           branch: update-colab-images-list
           add-paths: |
             test/colab-images-list.csv
