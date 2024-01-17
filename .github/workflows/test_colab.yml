@@ -54,30 +54,30 @@ jobs:
             echo "RESULT=$RESULT" >> $GITHUB_ENV
           fi
 
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
+      # - name: Free Disk Space (Ubuntu)
+      #   uses: jlumbroso/free-disk-space@main
+      #   with:
+      #     tool-cache: false
+      #     android: true
+      #     dotnet: true
+      #     haskell: true
+      #     large-packages: true
+      #     docker-images: true
+      #     swap-storage: true
 
-      - name: Docker login
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      # - name: Docker login
+      #   if: github.event_name != 'pull_request'
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKER_USERNAME }}
+      #     password: ${{ secrets.DOCKER_PASSWORD }}
           
-      - name: Pull from GCP and Push Docker image to Docker Hub    
-        if: github.event_name != 'pull_request' && env.RESULT == 'true'
-        run: |
-          docker pull us-docker.pkg.dev/colab-images/public/runtime:latest
-          docker tag us-docker.pkg.dev/colab-images/public/runtime:latest imagingdatacommons/idc-testing-colab:latest
-          docker push imagingdatacommons/idc-testing-colab:latest
+      # - name: Pull from GCP and Push Docker image to Docker Hub    
+      #   if: github.event_name != 'pull_request' && env.RESULT == 'true'
+      #   run: |
+      #     docker pull us-docker.pkg.dev/colab-images/public/runtime:latest
+      #     docker tag us-docker.pkg.dev/colab-images/public/runtime:latest imagingdatacommons/idc-testing-colab:latest
+      #     docker push imagingdatacommons/idc-testing-colab:latest
 
       - name: Pull Docker image from Docker Hub
         if: github.event_name == 'pull_request' || env.RESULT == 'false'
@@ -97,7 +97,7 @@ jobs:
         run: |
           for nb in part1_prerequisites part2_searching_basics part3_exploring_cohorts; do
             # Create a new directory for each notebook
-            mkdir -p "/content/notebooks/${nb}"
+            sudo mkdir -p "/content/notebooks/${nb}"
             
             docker run -d --name colab -v "$(pwd):/content" -e GOOGLE_APPLICATION_CREDENTIALS="${{ env.GOOGLE_APPLICATION_CREDENTIALS }}" imagingdatacommons/idc-testing-colab:latest
             docker exec -t colab /bin/bash -c "pip install papermill==2.4.0"
@@ -107,7 +107,7 @@ jobs:
                      
             docker stop colab
             docker rm colab
-            rm -r "/content/notebooks/${nb}"
+            sudo rm -r "/content/notebooks/${nb}"
           done
         
       - name: Create Pull Request to update the colab image metadata database
