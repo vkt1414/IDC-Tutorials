@@ -97,17 +97,17 @@ jobs:
         run: |
           for nb in part1_prerequisites part2_searching_basics part3_exploring_cohorts; do
             # Create a new directory for each notebook
-            sudo mkdir -p "/content/notebooks/${nb}"
+            sudo mkdir -p "temp/${nb}"
             
             docker run -d --name colab -v "$(pwd):/content" -e GOOGLE_APPLICATION_CREDENTIALS="${{ env.GOOGLE_APPLICATION_CREDENTIALS }}" imagingdatacommons/idc-testing-colab:latest
             docker exec -t colab /bin/bash -c "pip install papermill==2.4.0"
             
             # Change the working directory to the new directory
-            docker exec -t colab /bin/bash -c "set -o xtrace && set -o errexit && set -o pipefail && set -o nounset && set +o errexit && cd /content/notebooks/${nb} && papermill --log-level='DEBUG' /content/notebooks/getting_started/${nb}.ipynb /content/test/outputs/${nb}_papermill_output.ipynb && set -o errexit && ls -A"
+            docker exec -t colab /bin/bash -c "set -o xtrace && set -o errexit && set -o pipefail && set -o nounset && set +o errexit && cd /content/temp/${nb} && papermill --log-level='DEBUG' /content/notebooks/getting_started/${nb}.ipynb /content/test/outputs/${nb}_papermill_output.ipynb && set -o errexit && ls -A"
                      
             docker stop colab
             docker rm colab
-            sudo rm -r "/content/notebooks/${nb}"
+            sudo rm -r "temp/${nb}"
           done
         
       - name: Create Pull Request to update the colab image metadata database
